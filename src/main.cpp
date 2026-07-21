@@ -1,11 +1,14 @@
 #include <iostream>
-
-using namespace std;
+#include "task.h"
 
 
 int main()
 {
-    cout<<"MySchedule start"<<endl;
+
+    Task t(1, "name", "111", "000");
+
+    t.print();
+
 
     return 0;
 }
