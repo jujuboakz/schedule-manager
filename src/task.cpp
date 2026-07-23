@@ -1,4 +1,4 @@
-#include "task.h"
+#include "Task.h"
 #include <iostream>
 #include <iomanip>
 
@@ -32,6 +32,13 @@ std::string Task::getStartTime() const{
     return startTime;
 };
 
+void Task::complete(){
+    completed = true;
+}
+
+bool Task::isFinished(){
+    return false;
+}
 
 void Task::print() const
 {

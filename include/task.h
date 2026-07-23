@@ -50,6 +50,10 @@ public:
 
     std::string categoryToString() const;
 
+    void complete();
+
+    bool isFinished();
+
 
 private:
 
