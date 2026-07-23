@@ -8,7 +8,11 @@ set(CMAKE_CXX_STANDARD 11)
 add_executable(
     myschedule
     src/main.cpp
-    src/task.cpp
+    src/Task.cpp
+    src/ScheduleManager.cpp
+    src/Storage.cpp
+    src/User.cpp
+    src/CommandParser.cpp
 )
 
 target_include_directories(
