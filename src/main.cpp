@@ -1,14 +1,27 @@
-#include <iostream>
-#include "task.h"
+#include <QApplication>
+#include <QMetaType>
+#include "LoginDialog.h"
+#include "MainWindow.h"
+#include "Storage.h"
+#include "Task.h"
 
-
-int main()
+int main(int argc, char *argv[])
 {
+    QApplication app(argc, argv);
 
-    Task t(1, "name", "111", "000");
+    qRegisterMetaType<Task>("Task");
 
-    t.print();
+    auto users = Storage::loadUsers();
 
+    LoginDialog login;
+    login.setUsers(users);
+
+    if(login.exec() == QDialog::Accepted) {
+        Storage::saveUsers(users);
+        MainWindow w(login.getUsername());
+        w.show();
+        return app.exec();
+    }
 
     return 0;
 }
