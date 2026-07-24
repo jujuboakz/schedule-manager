@@ -1,14 +1,27 @@
 #ifndef STORAGE_H
 #define STORAGE_H
 
+#include <QList>
+#include <QMap>
+#include <Qstring>
+#include <QDateTime>
+#include "Task.h"
+
 class Storage
 {
 public:
-    Storage();
+    //任务数据操作
+    static bool saveTasks(const QList<Task>&, const QString &filename = "data/tasks.json");
 
-    bool save();
+    static QList<Task> loadTasks(const QString &filename = "data/tasks.json");
+    
+    //用户数据操作
+    static bool saveUsers(const QMap<QString,QString>&users, const QString &filename = "data/users.json");
+    
+    static QMap<QString,QString> loadUsers(const QString &filename = "data/users.json");
 
-    bool load();
+private:
+    static void ensureDirectoryExists();
 };
 
 #endif
