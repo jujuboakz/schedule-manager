@@ -1,8 +1,9 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include <string>
-
+#include <QString>
+#include <QDateTime>
+#include <QJsonObject>
 
 enum class Priority
 {
@@ -26,29 +27,40 @@ class Task
 
 public:
 
+    Task();
+
     Task(
         int id,
-        const std::string& name,
-        const std::string& startTime,
-        const std::string& remindTime,
+        const QString& name,
+        const QDateTime& startTime,
+        const QDateTime& remindTime,
         Priority priority = Priority::MEDIUM,
         Category category = Category::LIFE,
         bool completed = false
     );
 
 
+    //getter
     int getId() const;
 
-    std::string getName() const;
+    QString getName() const;
 
-    std::string getStartTime() const;
+    QDateTime getStartTime() const;
 
+    //JSON序列化支持
+    QJsonObject toJson() const;
 
+    static Task fromJson(const QJsonObject &obj);
+
+    bool isSameIdentity(const Task &other) const;
+
+    //打印任务
     void print() const;
 
-    std::string priorityToString() const;
+    //辅助函数
+    QString priorityToString() const;
 
-    std::string categoryToString() const;
+    QString categoryToString() const;
 
     void complete();
 
@@ -59,15 +71,15 @@ private:
 
     int id;
 
-    std::string name;
+    QString name;
 
-    std::string startTime;
+    QDateTime startTime;
 
     Priority priority;
 
     Category category;
 
-    std::string remindTime;
+    QDateTime remindTime;
 
     bool completed;
 

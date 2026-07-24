@@ -1,13 +1,19 @@
 #include "Task.h"
 #include <iostream>
 #include <iomanip>
+#include <QDebug>
 
+Task::Task() : 
+    id(0), 
+    priority(Priority::MEDIUM), 
+    category(Category::LIFE), 
+    completed(false) {}
 
 Task::Task(
         int id,
-        const std::string& name,
-        const std::string& startTime,
-        const std::string& remindTime,
+        const QString& name,
+        const QDateTime& startTime,
+        const QDateTime& remindTime,
         Priority priority,
         Category category,
         bool completed
@@ -17,18 +23,19 @@ Task::Task(
     startTime(startTime),
     remindTime(remindTime),
     priority(priority),
-    category(category){};
+    category(category),
+    completed(completed){};
 
 
 int Task::getId() const{
     return id;
 };
 
-std::string Task::getName() const{
+QString Task::getName() const{
     return name;
 };
 
-std::string Task::getStartTime() const{
+QDateTime Task::getStartTime() const{
     return startTime;
 };
 
@@ -37,62 +44,72 @@ void Task::complete(){
 }
 
 bool Task::isFinished(){
-    return false;
+    return completed;
 }
 
 void Task::print() const
 {
-    std::cout << std::left;
-
-    std::cout << std::setw(12) << "id" 
-              << ": " << id << std::endl;
-
-    std::cout << std::setw(12) << "name" 
-              << ": " << name << std::endl;
-
-    std::cout << std::setw(12) << "startTime" 
-              << ": " << startTime << std::endl;
-
-    std::cout << std::setw(12) << "remindTime" 
-              << ": " << remindTime << std::endl;
-
-    std::cout << std::setw(12) << "priority" 
-              << ": " << priorityToString() << std::endl;
-
-    std::cout << std::setw(12) << "category" 
-              << ": " << categoryToString() << std::endl;
+    //后续适配Qt输出
 }
 
-std::string Task::priorityToString() const
+QString Task::priorityToString() const
 {
     switch(priority)
     {
         case Priority::HIGH:
-            return "HIGH";
+            return "高";
 
         case Priority::MEDIUM:
-            return "MEDIUM";
+            return "中";
 
         case Priority::LOW:
-            return "LOW";
+            return "低";
     }
 
-    return "";
+    return "中";
 }
 
-std::string Task::categoryToString() const
+QString Task::categoryToString() const
 {
     switch(category)
     {
         case Category::STUDY:
-            return "STUDY";
+            return "学习";
 
         case Category::ENTERTAINMENT:
-            return "ENTERTAINMENT";
+            return "娱乐";
 
         case Category::LIFE:
-            return "LIFE";
+            return "生活";
     }
 
-    return "";
+    return "生活";
+}
+
+QJsonObject Task::toJson() const {
+    QJsonObject obj;
+    obj["id"] = id;
+    obj["name"] = name;
+    obj["startTime"] = startTime.toString(Qt::ISODate);
+    obj["priority"] = static_cast<int>(priority);
+    obj["category"] = static_cast<int>(category);
+    obj["remindTime"] = remindTime.toString(Qt::ISODate);
+    obj["isCompleted"] = completed;
+    return obj;
+}
+
+Task Task::fromJson(const QJsonObject &obj) {
+    Task t;
+    t.id = obj["id"].toInt();
+    t.name = obj["name"].toString();
+    t.startTime = QDateTime::fromString(obj["startTime"].toString(), Qt::ISODate);
+    t.priority = static_cast<Priority>(obj["priority"].toInt());
+    t.category = static_cast<Category>(obj["category"].toInt());
+    t.remindTime = QDateTime::fromString(obj["remindTime"].toString(), Qt::ISODate);
+    t.completed = obj["isCompleted"].toBool();
+    return t;
+}
+
+bool Task::isSameIdentity(const Task &other) const {
+    return (this->name == other.name && this->startTime == other.startTime);
 }
