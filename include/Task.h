@@ -64,11 +64,10 @@ public:
 
     void complete();
 
-    bool isFinished();
+    bool isFinished() const;
 
 
-private:
-
+public:
     int id;
 
     QString name;

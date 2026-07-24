@@ -2,7 +2,7 @@
 #define ADD_TASK_DIALOG_H
 
 #include <QDialog>
-#include "task.h"
+#include "Task.h"
 
 namespace Ui { class AddTaskDialog; }
 

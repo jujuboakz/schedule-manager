@@ -43,7 +43,7 @@ void Task::complete(){
     completed = true;
 }
 
-bool Task::isFinished(){
+bool Task::isFinished() const{
     return completed;
 }
 

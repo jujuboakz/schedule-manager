@@ -36,14 +36,14 @@
     <item>
      <widget class="QPushButton" name="pushButton_Login">
       <property name="text">
-       <string>鐧诲綍</string>
+       <string>登录</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="pushButton_Register">
       <property name="text">
-       <string>娉ㄥ唽</string>
+       <string>注册</string>
       </property>
      </widget>
     </item>
@@ -59,7 +59,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>瀵嗙爜锛�</string>
+    <string>密码＄1�7</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -72,7 +72,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>鐢ㄦ埛鍚嶏細</string>
+    <string>用户名：</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_Password">

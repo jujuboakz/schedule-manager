@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>AddTaskDialog</class>
+ <widget class="QDialog" name="AddTasksDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -33,7 +33,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>分类：</string>
+    <string>分类＄1�7</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
@@ -85,7 +85,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>任务名称：</string>
+    <string>任务名称＄1�7</string>
    </property>
   </widget>
   <widget class="QDateTimeEdit" name="dateTimeEdit_Remind">
@@ -118,7 +118,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>提醒时间：</string>
+    <string>提醒时间＄1�7</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -131,7 +131,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>开始时间：</string>
+    <string>弢�始时间：</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_Name">

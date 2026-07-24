@@ -6,6 +6,7 @@
 #include <QTableWidgetItem>
 #include <QCloseEvent>
 #include <QDateTime>
+#include <QDebug>
 
 MainWindow::MainWindow(const QString &username, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), m_username(username), m_nextId(1), m_remindThread(nullptr), m_reminder(nullptr)
@@ -15,7 +16,16 @@ MainWindow::MainWindow(const QString &username, QWidget *parent)
 
     connect(ui->pushButton_Add, &QPushButton::clicked, this, &MainWindow::onAddTask);
     connect(ui->pushButton_Delete, &QPushButton::clicked, this, &MainWindow::onDeleteTask);
-    connect(ui->pushButton_Edit, &QPushButton::clicked, this, &MainWindow::onEditTask);
+    connect(
+    ui->pushButton_Edit,
+    &QPushButton::clicked,
+    this,
+    [this](){
+        qDebug()<<"edit clicked";
+        onEditTask();
+    }
+    );
+    //connect(ui->pushButton_Edit, &QPushButton::clicked, this, &MainWindow::onEditTask);
     connect(ui->pushButton_Refresh, &QPushButton::clicked, this, &MainWindow::onRefreshList);
     connect(ui->calendarWidget, &QCalendarWidget::selectionChanged, this, &MainWindow::onRefreshList);
     connect(ui->pushButton_Complete, &QPushButton::clicked, this, &MainWindow::onToggleComplete);
@@ -72,6 +82,8 @@ void MainWindow::onAddTask()
 
 void MainWindow::onDeleteTask()
 {
+    qDebug() << "进入 delete";
+
     int row = ui->tableWidget->currentRow();
     if(row < 0) {
         QMessageBox::warning(this, "提示", "请先选中要删除的任务");
@@ -92,6 +104,14 @@ void MainWindow::onDeleteTask()
 
 void MainWindow::onEditTask()
 {
+    qDebug() << "进入 edit";
+
+    if(!ui->tableWidget)
+    {
+        qDebug()<<"tableWidget is null";
+        return;
+    }
+    
     int row = ui->tableWidget->currentRow();
     if(row < 0) {
         QMessageBox::warning(this, "提示", "请先选中要修改的任务");
@@ -126,12 +146,14 @@ void MainWindow::onEditTask()
 
 void MainWindow::onToggleComplete()
 {
+    qDebug() << "进入 complete";
+
     int row = ui->tableWidget->currentRow();
     if(row < 0) return;
     int id = ui->tableWidget->item(row, 0)->text().toInt();
     for(Task &t : m_tasks) {
         if(t.id == id) {
-            t.isCompleted = !t.isCompleted;
+            t.completed = !t.completed;
             break;
         }
     }
@@ -171,10 +193,10 @@ void MainWindow::refreshTable(const QList<Task> &tasks)
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(t.id)));
         ui->tableWidget->setItem(i, 1, new QTableWidgetItem(t.name));
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(t.startTime.toString("yyyy-MM-dd HH:mm")));
-        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(Task::priorityToString(t.priority)));
-        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(Task::categoryToString(t.category)));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(t.priorityToString()));
+        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(t.categoryToString()));
         ui->tableWidget->setItem(i, 5, new QTableWidgetItem(t.remindTime.toString("yyyy-MM-dd HH:mm")));
-        ui->tableWidget->setItem(i, 6, new QTableWidgetItem(t.isCompleted ? "已完成" : "未完成"));
+        ui->tableWidget->setItem(i, 6, new QTableWidgetItem(t.completed ? "已完成" : "未完成"));
     }
     ui->tableWidget->resizeColumnsToContents();
 }
