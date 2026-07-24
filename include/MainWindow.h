@@ -6,7 +6,7 @@
 #include <QThread>
 #include "Task.h"
 
-class Reminder;  // 前置声明，等 thread 分支合并后再 include
+class Reminder;  //前置声明
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
