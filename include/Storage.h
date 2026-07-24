@@ -3,7 +3,7 @@
 
 #include <QList>
 #include <QMap>
-#include <Qstring>
+#include <QString>
 #include <QDateTime>
 #include "Task.h"
 
