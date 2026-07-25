@@ -58,13 +58,13 @@ MainWindow::~MainWindow() {
 
 void MainWindow::setupRemindWorker() {
     m_remindThread = new QThread(this);
-    m_remindWorker = new RemindWorker(&m_tasks);
+    m_remindWorker = new Reminder(&m_tasks);
     m_remindWorker->moveToThread(m_remindThread);
 
     connect(m_remindThread, &QThread::started, [this]() {
         m_remindWorker->start(30);
     });
-    connect(m_remindWorker, &RemindWorker::remindSignal, this, &MainWindow::onTaskReminded);
+    connect(m_remindWorker, &Reminder::remindSignal, this, &MainWindow::onTaskReminded);
     connect(m_remindThread, &QThread::finished, m_remindWorker, &QObject::deleteLater);
 
     m_remindThread->start();
@@ -162,7 +162,7 @@ void MainWindow::onToggleComplete() {
     int id = ui->tableWidget->item(row, 0)->text().toInt();
     for(Task &t : m_tasks) {
         if(t.id == id) {
-            t.isCompleted = !t.isCompleted;
+            t.completed = !t.completed;
             break;
         }
     }
@@ -199,10 +199,10 @@ void MainWindow::refreshTable(const QList<Task> &tasks) {
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(t.id)));
         ui->tableWidget->setItem(i, 1, new QTableWidgetItem(t.name));
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(t.startTime.toString("yyyy-MM-dd HH:mm")));
-        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(Task::priorityToString(t.priority)));
-        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(Task::categoryToString(t.category)));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(t.priorityToString()));
+        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(t.categoryToString()));
         ui->tableWidget->setItem(i, 5, new QTableWidgetItem(t.remindTime.toString("yyyy-MM-dd HH:mm")));
-        ui->tableWidget->setItem(i, 6, new QTableWidgetItem(t.isCompleted ? "✅ 已完成" : "⏳ 未完成"));
+        ui->tableWidget->setItem(i, 6, new QTableWidgetItem(t.completed ? "✅ 已完成" : "⏳ 未完成"));
     }
     ui->tableWidget->resizeColumnsToContents();
 
@@ -214,7 +214,7 @@ void MainWindow::refreshTable(const QList<Task> &tasks) {
 
     for(const Task &t : m_tasks) {
         if(t.startTime.date() == currentDate) today++;
-        if(t.isCompleted) done++;
+        if(t.completed) done++;
     }
 
     ui->label_total->setText("📋 总任务数：" + QString::number(total));

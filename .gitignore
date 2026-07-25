@@ -4,3 +4,7 @@ Release/
 *.exe
 *.obj
 *.pdb
+
+# 忽略语音识别模型文件夹（防止 Git 试图转换二进制文件的换行符）
+model/
+vosk-api/

@@ -113,3 +113,15 @@ Task Task::fromJson(const QJsonObject &obj) {
 bool Task::isSameIdentity(const Task &other) const {
     return (this->name == other.name && this->startTime == other.startTime);
 }
+
+Priority Task::stringToPriority(const QString &s) {
+    if(s == "高") return Priority::HIGH;
+    if(s == "低") return Priority::LOW;
+    return Priority::MEDIUM;
+}
+
+Category Task::stringToCategory(const QString &s) {
+    if(s == "学习") return Category::STUDY;
+    if(s == "娱乐") return Category::ENTERTAINMENT;
+    return Category::LIFE;
+}

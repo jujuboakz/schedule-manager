@@ -66,6 +66,8 @@ public:
 
     bool isFinished() const;
 
+    static Priority stringToPriority(const QString &str);
+    static Category stringToCategory(const QString &str);
 
 public:
     int id;

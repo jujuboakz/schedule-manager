@@ -15,6 +15,7 @@ public:
 
     Task getTask() const;
     void setTask(const Task &t); // 用于修改
+    void setTaskName(const QString &name);
 
 private:
     Ui::AddTaskDialog *ui;

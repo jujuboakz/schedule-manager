@@ -5,8 +5,8 @@
 #include <QList>
 #include <QThread>
 #include "Task.h"
-
-class Reminder;  //前置声明
+#include "Reminder.h"
+#include "VoiceRecognizer.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,29 +20,45 @@ public:
     MainWindow(const QString &username, QWidget *parent = nullptr);
     ~MainWindow();
 
-protected:
-    void closeEvent(QCloseEvent *event) override;
-
 private slots:
     void onAddTask();
     void onDeleteTask();
     void onEditTask();
+    void onToggleComplete();
     void onRefreshList();
     void onDateSelected(const QDate &date);
-    void onToggleComplete();
+    void onTaskReminded(const Task &task);
+
+    // 语音识别的槽函数
+    void onVoiceInput();
+    void onVoiceResult(const QString &text);
+    void onVoiceStatus(const QString &status);
 
 private:
     void loadTasks();
     void saveTasks();
     void refreshTable(const QList<Task> &tasks);
+    
+    // 设置后台线程
+    void setupRemindWorker();
+    void setupVoiceRecognizer();
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
+private:
     Ui::MainWindow *ui;
     QString m_username;
     QList<Task> m_tasks;
     int m_nextId;
 
+    // 多线程提醒
     QThread *m_remindThread;
-    Reminder *m_reminder;
+    Reminder *m_remindWorker;
+
+    // 语音识别
+    VoiceRecognizer *m_voiceRecognizer;
+    QString m_voiceTaskName;
 };
 
-#endif
+#endif // MAINWINDOW_H
