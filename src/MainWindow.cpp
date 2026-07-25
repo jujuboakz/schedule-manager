@@ -19,11 +19,11 @@ MainWindow::MainWindow(const QString &username, QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("📅 日程管家 - " + username);
 
-    // ========== 统计标签和分组框标题改为黑色 ==========
-    ui->label_total->setStyleSheet("color: #000000;");
-    ui->label_today->setStyleSheet("color: #000000;");
-    ui->label_done->setStyleSheet("color: #000000;");
-    ui->groupBox_Stats->setStyleSheet("QGroupBox::title { color: #000000; }");
+    // // ========== 统计标签和分组框标题改为黑色 ==========
+    // ui->label_total->setStyleSheet("color: #000000;");
+    // ui->label_today->setStyleSheet("color: #000000;");
+    // ui->label_done->setStyleSheet("color: #000000;");
+    // ui->groupBox_Stats->setStyleSheet("QGroupBox::title { color: #000000; }");
        
     // ===================================================
 

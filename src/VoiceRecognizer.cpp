@@ -28,47 +28,47 @@ bool VoiceRecognizer::init(const QString &modelPath)
 
     m_model = vosk_model_new(modelPath.toUtf8().constData());
     if (!m_model) {
-        qDebug() << "Vosk Ä£ĞÍ¼ÓÔØÊ§°Ü:" << modelPath;
+        qDebug() << "Vosk æ¨¡å‹åŠ è½½å¤±è´¥:" << modelPath;
         return false;
     }
 
     m_recognizer = vosk_recognizer_new(m_model, 16000.0);
     if (!m_recognizer) {
-        qDebug() << "Vosk Ê¶±ğÆ÷´´½¨Ê§°Ü";
+        qDebug() << "Vosk è¯†åˆ«å™¨åˆ›å»ºå¤±è´¥";
         vosk_model_free(m_model);
         m_model = nullptr;
         return false;
     }
 
     m_initialized = true;
-    qDebug() << "Vosk ³õÊ¼»¯³É¹¦";
-    emit statusChanged("ÓïÒôÊ¶±ğÒÑ¾ÍĞ÷");
+    qDebug() << "Vosk åˆå§‹åŒ–æˆåŠŸ";
+    emit statusChanged("è¯­éŸ³è¯†åˆ«å·²å°±ç»ª");
     return true;
 }
 
 void VoiceRecognizer::startRecording(int seconds)
 {
     if (!m_initialized) {
-        emit statusChanged("´íÎó£ºÇëÏÈ³õÊ¼»¯ÓïÒôÊ¶±ğ");
+        emit statusChanged("é”™è¯¯ï¼šè¯·å…ˆåˆå§‹åŒ–è¯­éŸ³è¯†åˆ«");
         return;
     }
 
     if (m_isRecording) {
-        qDebug() << "ÒÑ¾­ÔÚÂ¼ÒôÖĞ";
+        qDebug() << "å·²ç»åœ¨å½•éŸ³ä¸­";
         return;
     }
 
-    // É¾³ı¾ÉµÄÁÙÊ±ÎÄ¼ş
+    // åˆ é™¤æ—§çš„ä¸´æ—¶æ–‡ä»¶
     QFile::remove(m_tempWavFile);
 
-    // ´´½¨ QProcess
+    // åˆ›å»º QProcess
     m_recordingProcess = new QProcess(this);
     connect(m_recordingProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
             this, &VoiceRecognizer::onRecordingFinished);
     connect(m_recordingProcess, &QProcess::errorOccurred,
             this, &VoiceRecognizer::onProcessError);
 
-    // ¹¹½¨ÃüÁî£ºarecord -d ÃëÊı -f S16_LE -r 16000 -c 1 -t wav Êä³öÎÄ¼ş
+    // æ„å»ºå‘½ä»¤ï¼šarecord -d ç§’æ•° -f S16_LE -r 16000 -c 1 -t wav è¾“å‡ºæ–‡ä»¶
     QStringList args;
     args << "-d" << QString::number(seconds)
          << "-f" << "S16_LE"
@@ -77,33 +77,33 @@ void VoiceRecognizer::startRecording(int seconds)
          << "-t" << "wav"
          << m_tempWavFile;
 
-    qDebug() << "Ö´ĞĞÃüÁî: arecord" << args.join(" ");
+    qDebug() << "æ‰§è¡Œå‘½ä»¤: arecord" << args.join(" ");
 
     m_recordingProcess->start("arecord", args);
     if (!m_recordingProcess->waitForStarted(2000)) {
-        qDebug() << "Æô¶¯ arecord Ê§°Ü";
-        emit statusChanged("´íÎó£ºÎŞ·¨Æô¶¯Â¼Òô (arecord Î´°²×°)");
+        qDebug() << "å¯åŠ¨ arecord å¤±è´¥";
+        emit statusChanged("é”™è¯¯ï¼šæ— æ³•å¯åŠ¨å½•éŸ³ (arecord æœªå®‰è£…)");
         delete m_recordingProcess;
         m_recordingProcess = nullptr;
         return;
     }
 
     m_isRecording = true;
-    qDebug() << "¿ªÊ¼Â¼Òô£¬Ê±³¤:" << seconds << "Ãë";
-    emit statusChanged(QString("”9À2 Â¼ÒôÖĞ... (%1Ãë)").arg(seconds));
+    qDebug() << "å¼€å§‹å½•éŸ³ï¼Œæ—¶é•¿:" << seconds << "ç§’";
+    emit statusChanged(QString("ğŸ¤ å½•éŸ³ä¸­... (%1ç§’)").arg(seconds));
 }
 
 void VoiceRecognizer::stopRecording()
 {
     if (!m_isRecording || !m_recordingProcess) return;
 
-    m_recordingProcess->terminate(); // ·¢ËÍ SIGTERM
+    m_recordingProcess->terminate(); // å‘é€ SIGTERM
     m_recordingProcess->waitForFinished(1000);
     if (m_recordingProcess->state() == QProcess::Running) {
         m_recordingProcess->kill();
     }
     m_isRecording = false;
-    emit statusChanged("Â¼ÒôÒÑÊÖ¶¯Í£Ö¹");
+    emit statusChanged("å½•éŸ³å·²æ‰‹åŠ¨åœæ­¢");
 }
 
 bool VoiceRecognizer::isRecording() const
@@ -118,35 +118,35 @@ void VoiceRecognizer::onRecordingFinished(int exitCode, QProcess::ExitStatus sta
     m_recordingProcess = nullptr;
 
     if (status == QProcess::CrashExit || exitCode != 0) {
-        qDebug() << "Â¼Òô½ø³ÌÒì³£ÍË³ö£¬exitCode:" << exitCode;
-        emit statusChanged("Â¼ÒôÊ§°Ü");
+        qDebug() << "å½•éŸ³è¿›ç¨‹å¼‚å¸¸é€€å‡ºï¼ŒexitCode:" << exitCode;
+        emit statusChanged("å½•éŸ³å¤±è´¥");
         return;
     }
 
-    qDebug() << "Â¼ÒôÍê³É£¬ÎÄ¼ş:" << m_tempWavFile;
-    emit statusChanged("77 ÕıÔÚÊ¶±ğ...");
+    qDebug() << "å½•éŸ³å®Œæˆï¼Œæ–‡ä»¶:" << m_tempWavFile;
+    emit statusChanged("â³ æ­£åœ¨è¯†åˆ«...");
 
-    // Ê¶±ğÒôÆµÎÄ¼ş
+    // è¯†åˆ«éŸ³é¢‘æ–‡ä»¶
     recognizeWavFile(m_tempWavFile);
 }
 
 void VoiceRecognizer::onProcessError(QProcess::ProcessError error)
 {
-    qDebug() << "Â¼Òô½ø³Ì´íÎó:" << error;
+    qDebug() << "å½•éŸ³è¿›ç¨‹é”™è¯¯:" << error;
     m_isRecording = false;
     if (m_recordingProcess) {
         delete m_recordingProcess;
         m_recordingProcess = nullptr;
     }
-    emit statusChanged("Â¼Òô½ø³Ì³ö´í");
+    emit statusChanged("å½•éŸ³è¿›ç¨‹å‡ºé”™");
 }
 
 void VoiceRecognizer::recognizeWavFile(const QString &filePath)
 {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "ÎŞ·¨´ò¿ªÂ¼ÒôÎÄ¼ş:" << filePath;
-        emit statusChanged("ÎŞ·¨¶ÁÈ¡Â¼ÒôÎÄ¼ş");
+        qDebug() << "æ— æ³•æ‰“å¼€å½•éŸ³æ–‡ä»¶:" << filePath;
+        emit statusChanged("æ— æ³•è¯»å–å½•éŸ³æ–‡ä»¶");
         return;
     }
 
@@ -154,38 +154,38 @@ void VoiceRecognizer::recognizeWavFile(const QString &filePath)
     file.close();
 
     if (audioData.isEmpty()) {
-        qDebug() << "Â¼ÒôÎÄ¼şÎª¿Õ";
-        emit statusChanged("Â¼ÒôÊı¾İÎª¿Õ");
+        qDebug() << "å½•éŸ³æ–‡ä»¶ä¸ºç©º";
+        emit statusChanged("å½•éŸ³æ•°æ®ä¸ºç©º");
         return;
     }
 
-    // Ìø¹ı WAV Í·²¿£¨44 ×Ö½Ú£©£¬½« PCM Êı¾İËÍÈë Vosk
+    // è·³è¿‡ WAV å¤´éƒ¨ï¼ˆ44 å­—èŠ‚ï¼‰ï¼Œå°† PCM æ•°æ®é€å…¥ Vosk
     const char *pcmData = audioData.constData() + 44;
     int pcmSize = audioData.size() - 44;
 
     if (pcmSize <= 0) {
-        qDebug() << "PCM Êı¾İÎª¿Õ";
-        emit statusChanged("Â¼ÒôÊı¾İ¸ñÊ½´íÎó");
+        qDebug() << "PCM æ•°æ®ä¸ºç©º";
+        emit statusChanged("å½•éŸ³æ•°æ®æ ¼å¼é”™è¯¯");
         return;
     }
 
     if (vosk_recognizer_accept_waveform(m_recognizer, pcmData, pcmSize)) {
         QString result = QString::fromUtf8(vosk_recognizer_result(m_recognizer));
-        qDebug() << "Ê¶±ğ½á¹û:" << result;
+        qDebug() << "è¯†åˆ«ç»“æœ:" << result;
         emit recognitionResult(result);
-        emit statusChanged("Ê¶±ğÍê³É");
+        emit statusChanged("è¯†åˆ«å®Œæˆ");
     } else {
         QString partial = QString::fromUtf8(vosk_recognizer_partial_result(m_recognizer));
         if (!partial.isEmpty() && partial != "{}") {
             emit recognitionResult(partial);
-            emit statusChanged("²¿·ÖÊ¶±ğ½á¹û");
+            emit statusChanged("éƒ¨åˆ†è¯†åˆ«ç»“æœ");
         } else {
-            qDebug() << "Î´Ê¶±ğµ½ÓĞĞ§ÓïÒô";
-            emit statusChanged("Î´Ê¶±ğµ½ÓïÒô£¬ÇëÖØÊÔ");
+            qDebug() << "æœªè¯†åˆ«åˆ°æœ‰æ•ˆè¯­éŸ³";
+            emit statusChanged("æœªè¯†åˆ«åˆ°è¯­éŸ³ï¼Œè¯·é‡è¯•");
         }
     }
 
-    // É¾³ıÁÙÊ±ÎÄ¼ş
+    // åˆ é™¤ä¸´æ—¶æ–‡ä»¶
     QFile::remove(filePath);
 }
 
