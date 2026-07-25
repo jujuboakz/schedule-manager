@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>338</width>
-    <height>128</height>
+    <width>347</width>
+    <height>183</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>用户登录</string>
   </property>
   <widget class="QLineEdit" name="lineEdit_Username">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>14</y>
-     <width>228</width>
-     <height>20</height>
+     <x>75</x>
+     <y>20</y>
+     <width>230</width>
+     <height>30</height>
     </rect>
    </property>
   </widget>
@@ -27,23 +27,23 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>80</y>
-     <width>158</width>
-     <height>26</height>
+     <y>120</y>
+     <width>168</width>
+     <height>33</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QPushButton" name="pushButton_Login">
       <property name="text">
-       <string>鐧诲綍</string>
+       <string>登录</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="pushButton_Register">
       <property name="text">
-       <string>娉ㄥ唽</string>
+       <string>注册</string>
       </property>
      </widget>
     </item>
@@ -52,40 +52,40 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>26</x>
-     <y>40</y>
+     <x>25</x>
+     <y>70</y>
      <width>48</width>
-     <height>20</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
-    <string>瀵嗙爜锛�</string>
+    <string>密码</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>26</x>
-     <y>14</y>
+     <x>25</x>
+     <y>20</y>
      <width>48</width>
-     <height>20</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
-    <string>鐢ㄦ埛鍚嶏細</string>
+    <string>用户名</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_Password">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>40</y>
-     <width>228</width>
-     <height>20</height>
+     <x>75</x>
+     <y>70</y>
+     <width>230</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="echoMode">
-    <enum>QLineEdit::EchoMode::Password</enum>
+    <enum>QLineEdit::Normal</enum>
    </property>
   </widget>
  </widget>

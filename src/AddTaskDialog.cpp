@@ -5,7 +5,7 @@ AddTaskDialog::AddTaskDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AddT
     ui->setupUi(this);
     connect(ui->pushButton_Ok, &QPushButton::clicked, this, &QDialog::accept);
     connect(ui->pushButton_Cancel, &QPushButton::clicked, this, &QDialog::reject);
-    ui->comboBox_Priority->addItems({"髄1�7", "丄1�7", "佄1�7"});
+    ui->comboBox_Priority->addItems({u8"高", u8"中", u8"低"});
     ui->comboBox_Category->addItems({"学习", "娱乐", "生活"});
     ui->dateTimeEdit_Start->setDateTime(QDateTime::currentDateTime());
     ui->dateTimeEdit_Remind->setDateTime(QDateTime::currentDateTime().addSecs(60));

@@ -14,11 +14,11 @@ QString RegisterDialog::getPassword() const { return ui->lineEdit_Password->text
 
 void RegisterDialog::onConfirmClicked() {
     if(getUsername().isEmpty() || getPassword().isEmpty()) {
-        QMessageBox::warning(this, "错误", "用户名或密码不能为空");
+        QMessageBox::warning(this, u8"错误", u8"用户名或密码不能为空");
         return;
     }
     if(getPassword().length() < 6) {
-        QMessageBox::warning(this, "错误", "密码长度至少6佄1�7");
+        QMessageBox::warning(this, u8"错误", u8"密码长度不能少于6位");
         return;
     }
     accept();

@@ -49,7 +49,7 @@ bool Task::isFinished() const{
 
 void Task::print() const
 {
-    //ºóĞøÊÊÅäQtÊä³ö
+    //åç»­é€‚é…Qtè¾“å‡º
 }
 
 QString Task::priorityToString() const
@@ -57,16 +57,16 @@ QString Task::priorityToString() const
     switch(priority)
     {
         case Priority::HIGH:
-            return "¸ß";
+            return "é«˜";
 
         case Priority::MEDIUM:
-            return "ÖĞ";
+            return "ä¸­";
 
         case Priority::LOW:
-            return "µÍ";
+            return "ä½";
     }
 
-    return "ÖĞ";
+    return "ä¸­";
 }
 
 QString Task::categoryToString() const
@@ -74,16 +74,16 @@ QString Task::categoryToString() const
     switch(category)
     {
         case Category::STUDY:
-            return "Ñ§Ï°";
+            return "å­¦ä¹ ";
 
         case Category::ENTERTAINMENT:
-            return "ÓéÀÖ";
+            return "å¨±ä¹";
 
         case Category::LIFE:
-            return "Éú»î";
+            return "ç”Ÿæ´»";
     }
 
-    return "Éú»î";
+    return "ç”Ÿæ´»";
 }
 
 QJsonObject Task::toJson() const {
