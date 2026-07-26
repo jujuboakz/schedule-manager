@@ -4,24 +4,22 @@
 #include <QList>
 #include <QMap>
 #include <QString>
-#include <QDateTime>
 #include "Task.h"
 
 class Storage
 {
 public:
-    //ÈÎÎñÊı¾İ²Ù×÷
-    static bool saveTasks(const QList<Task>&, const QString &filename = "data/tasks.json");
+    // ä»»åŠ¡æ“ä½œï¼šå¢åŠ  username å‚æ•°
+    static bool saveTasks(const QList<Task>& tasks, const QString& username, const QString& filename = "");
+    static QList<Task> loadTasks(const QString& username, const QString& filename = "");
 
-    static QList<Task> loadTasks(const QString &filename = "data/tasks.json");
-    
-    //ÓÃ»§Êı¾İ²Ù×÷
-    static bool saveUsers(const QMap<QString,QString>&users, const QString &filename = "data/users.json");
-    
-    static QMap<QString,QString> loadUsers(const QString &filename = "data/users.json");
+    // ç”¨æˆ·æ“ä½œï¼šä¸å˜
+    static bool saveUsers(const QMap<QString, QString>& users, const QString& filename = "data/users.json");
+    static QMap<QString, QString> loadUsers(const QString& filename = "data/users.json");
 
 private:
     static void ensureDirectoryExists();
+    static QString getTaskFilePath(const QString& username, const QString& filename = "");
 };
 
 #endif

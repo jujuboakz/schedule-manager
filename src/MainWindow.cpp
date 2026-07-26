@@ -72,14 +72,14 @@ void MainWindow::setupRemindWorker() {
 }
 
 void MainWindow::loadTasks() {
-    m_tasks = Storage::loadTasks();
+    m_tasks = Storage::loadTasks(m_username);
     for(const Task &t : m_tasks) {
         if(t.id >= m_nextId) m_nextId = t.id + 1;
     }
 }
 
 void MainWindow::saveTasks() {
-    Storage::saveTasks(m_tasks);
+    Storage::saveTasks(m_tasks,m_username);
 }
 
 void MainWindow::onAddTask() {

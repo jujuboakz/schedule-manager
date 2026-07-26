@@ -4,19 +4,34 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QDir>
-
+#include <QCoreApplication>
+#include <QDebug>
 
 void Storage::ensureDirectoryExists() {
-    QDir dir("data");
+    QString dataPath = QCoreApplication::applicationDirPath() + "/data";
+    QDir dir(dataPath);
     if(!dir.exists()) {
         dir.mkpath(".");
+        qDebug() << "创建 data 目录:" << dataPath;
     }
 }
 
-bool Storage::saveTasks(const QList<Task>& tasks, const QString &filename) {
+// 生成用户专属任务文件路径
+QString Storage::getTaskFilePath(const QString& username, const QString& filename) {
+    if (!filename.isEmpty()) {
+        return QCoreApplication::applicationDirPath() + "/" + filename;
+    }
+    // 默认：data/tasks_用户名.json
+    return QCoreApplication::applicationDirPath() + "/data/tasks_" + username + ".json";
+}
+
+bool Storage::saveTasks(const QList<Task>& tasks, const QString& username, const QString& filename) {
     ensureDirectoryExists();
-    QFile file(filename);
+    QString fullPath = getTaskFilePath(username, filename);
+    QFile file(fullPath);
     if(!file.open(QIODevice::WriteOnly)) {
+        qDebug() << "saveTasks 打开文件失败:" << file.errorString();
+        qDebug() << "尝试写入路径:" << fullPath;
         return false;
     }
 
@@ -27,21 +42,26 @@ bool Storage::saveTasks(const QList<Task>& tasks, const QString &filename) {
     QJsonDocument doc(arr);
     file.write(doc.toJson());
     file.close();
+    qDebug() << "saveTasks 成功写入:" << fullPath << ", 任务数:" << tasks.size();
     return true;
 }
 
-QList<Task> Storage::loadTasks(const QString &filename) {
+QList<Task> Storage::loadTasks(const QString& username, const QString& filename) {
     QList<Task> tasks;
-    QFile file(filename);
+    QString fullPath = getTaskFilePath(username, filename);
+    QFile file(fullPath);
     if(!file.exists()) {
+        qDebug() << "loadTasks: 文件不存在:" << fullPath << "，返回空列表";
         return tasks;
     }
     if(!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "loadTasks: 打开文件失败:" << fullPath;
         return tasks;
     }
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     if(!doc.isArray()) {
+        qDebug() << "loadTasks: JSON 格式错误（不是数组）";
         return tasks;
     }
 
@@ -50,13 +70,17 @@ QList<Task> Storage::loadTasks(const QString &filename) {
         tasks.append(Task::fromJson(val.toObject()));
     }
     file.close();
+    qDebug() << "loadTasks: 成功加载" << tasks.size() << "个任务，来自:" << fullPath;
     return tasks;
 }
 
-bool Storage::saveUsers(const QMap<QString, QString>& users, const QString &filename) {
+bool Storage::saveUsers(const QMap<QString, QString>& users, const QString& filename) {
     ensureDirectoryExists();
-    QFile file(filename);
+    QString fullPath = QCoreApplication::applicationDirPath() + "/" + filename;
+    QFile file(fullPath);
     if(!file.open(QIODevice::WriteOnly)) {
+        qDebug() << "saveUsers 打开文件失败:" << file.errorString();
+        qDebug() << "尝试写入路径:" << fullPath;
         return false;
     }
 
@@ -67,21 +91,26 @@ bool Storage::saveUsers(const QMap<QString, QString>& users, const QString &file
     QJsonDocument doc(obj);
     file.write(doc.toJson());
     file.close();
+    qDebug() << "saveUsers 成功写入:" << fullPath << ", 用户数:" << users.size();
     return true;
 }
 
-QMap<QString, QString> Storage::loadUsers(const QString &filename) {
+QMap<QString, QString> Storage::loadUsers(const QString& filename) {
     QMap<QString, QString> users;
-    QFile file(filename);
+    QString fullPath = QCoreApplication::applicationDirPath() + "/" + filename;
+    QFile file(fullPath);
     if(!file.exists()) {
+        qDebug() << "loadUsers: 文件不存在:" << fullPath;
         return users;
     }
     if(!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "loadUsers: 打开文件失败:" << fullPath;
         return users;
     }
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     if(!doc.isObject()) {
+        qDebug() << "loadUsers: JSON 格式错误（不是对象）";
         return users;
     }
 
@@ -90,5 +119,6 @@ QMap<QString, QString> Storage::loadUsers(const QString &filename) {
         users[it.key()] = it.value().toString();
     }
     file.close();
+    qDebug() << "loadUsers: 成功加载" << users.size() << "个用户";
     return users;
 }

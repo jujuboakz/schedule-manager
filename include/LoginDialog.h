@@ -15,6 +15,7 @@ public:
 
     QString getUsername() const;
     void setUsers(const QMap<QString, QString> &users);
+    QMap<QString, QString> getUsers() const { return m_users; }
 
 private slots:
     void onLoginClicked();
