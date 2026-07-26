@@ -16,22 +16,25 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_root">
     <property name="spacing">
-     <number>0</number>
+    <number>15</number>
     </property>
     <property name="leftMargin">
-     <number>0</number>
+     <number>15</number>
     </property>
     <property name="topMargin">
-     <number>0</number>
+     <number>15</number>
     </property>
     <property name="rightMargin">
-     <number>0</number>
+     <number>15</number>
     </property>
     <property name="bottomMargin">
-     <number>0</number>
+     <number>15</number>
     </property>
     <item>
      <widget class="QFrame" name="frame_title">
+      <property name="minimumHeight">
+         <number>80</number>
+        </property>
       <property name="styleSheet">
        <string>QFrame { background-color: #b8ccb8; border-radius: 10px; }</string>
       </property>
@@ -39,18 +42,18 @@
        <enum>QFrame::StyledPanel</enum>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_title">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
+        <property name="leftMargin">
+         <number>20</number>
+        </property>
+        <property name="topMargin">
+         <number>8</number>
+        </property>
+        <property name="rightMargin">
+         <number>20</number>
+        </property>
+        <property name="bottomMargin">
+         <number>8</number>
+        </property>
        <item>
         <widget class="QLabel" name="label_title">
          <property name="font">
@@ -96,10 +99,13 @@
     <item>
      <layout class="QHBoxLayout" name="statsLayout">
       <property name="spacing">
-       <number>0</number>
+       <number>12</number>
       </property>
       <item>
        <widget class="QFrame" name="frame_total">
+        <property name="minimumHeight">
+         <number>80</number>
+        </property>
         <property name="styleSheet">
          <string>QFrame { background-color: #c0ccd6; border-radius: 10px; }</string>
         </property>
@@ -143,6 +149,9 @@
       </item>
       <item>
        <widget class="QFrame" name="frame_today">
+        <property name="minimumHeight">
+         <number>80</number>
+        </property>
         <property name="styleSheet">
          <string>QFrame { background-color: #d4c8b8; border-radius: 10px; }</string>
         </property>
@@ -186,6 +195,9 @@
       </item>
       <item>
        <widget class="QFrame" name="frame_done">
+        <property name="minimumHeight">
+         <number>80</number>
+        </property>
         <property name="styleSheet">
          <string>QFrame { background-color: #c8bcd0; border-radius: 10px; }</string>
         </property>
@@ -237,13 +249,50 @@
       <item>
        <widget class="QCalendarWidget" name="calendarWidget">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="styleSheet">
-         <string>QCalendarWidget { background-color: #ffffff; border: 1px solid #d0d7de; border-radius: 10px; padding: 6px; }</string>
+        <string>
+
+        QCalendarWidget {
+            background-color: #ffffff;
+            border: 1px solid #f0d6df;
+            border-radius: 10px;
+        }
+
+
+        /* 顶部年月栏 */
+        QCalendarWidget QWidget#qt_calendar_navigationbar {
+            background-color: #f8dfe7;
+        }
+
+        /* 鼠标悬停 */
+        QCalendarWidget QToolButton:hover {
+            background-color: #f5d0dc;
+        }
+
+        /* 左右切换按钮 */
+        QCalendarWidget QToolButton {
+            background-color: #f8dfe7;
+            color: #5a3a45;
+            border-radius: 6px;
+        }
+
+        QCalendarWidget QToolButton::menu-indicator {
+            image: none;
+        }
+
+
+        /* 选中的日期 */
+        QCalendarWidget QAbstractItemView {
+            selection-background-color: #fae8ed;
+            selection-color: #5a3a45;
+        }
+
+        </string>
         </property>
        </widget>
       </item>
@@ -271,21 +320,21 @@
        <enum>QFrame::StyledPanel</enum>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_buttons">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <property name="leftMargin">
+         <number>12</number>
+        </property>
+        <property name="topMargin">
+         <number>6</number>
+        </property>
+        <property name="rightMargin">
+         <number>12</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
        <item>
         <widget class="QPushButton" name="pushButton_Voice">
          <property name="sizePolicy">
