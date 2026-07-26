@@ -299,7 +299,7 @@ void MainWindow::onVoiceInput()
         ui->pushButton_Voice->setText("🎤 语音录入");
     } else {
         m_voiceRecognizer->startRecording(5);
-        ui->pushButton_Voice->setText("⏹ 停止录音");
+        ui->pushButton_Voice->setText("⏹ 取消录音");
     }
 }
 

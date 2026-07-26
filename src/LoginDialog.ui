@@ -4,91 +4,34 @@
  <widget class="QDialog" name="LoginDialog">
   <property name="geometry">
    <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>347</width>
-    <height>183</height>
+    <x>0</x><y>0</y><width>300</width><height>150</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>用户登录</string>
   </property>
-  <widget class="QLineEdit" name="lineEdit_Username">
-   <property name="geometry">
-    <rect>
-     <x>75</x>
-     <y>20</y>
-     <width>230</width>
-     <height>30</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>80</x>
-     <y>120</y>
-     <width>168</width>
-     <height>33</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QPushButton" name="pushButton_Login">
-      <property name="text">
-       <string>登录</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_Register">
-      <property name="text">
-       <string>注册</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>25</x>
-     <y>70</y>
-     <width>48</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>密码</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>25</x>
-     <y>20</y>
-     <width>48</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>用户名</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_Password">
-   <property name="geometry">
-    <rect>
-     <x>75</x>
-     <y>70</y>
-     <width>230</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="echoMode">
-    <enum>QLineEdit::Normal</enum>
-   </property>
-  </widget>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label"><property name="text"><string>用户名：</string></property></widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="lineEdit_Username"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2"><property name="text"><string>密码：</string></property></widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="lineEdit_Password"><property name="echoMode"><enum>QLineEdit::Password</enum></property></widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item><widget class="QPushButton" name="pushButton_Login"><property name="text"><string>登录</string></property></widget></item>
+     <item><widget class="QPushButton" name="pushButton_Register"><property name="text"><string>注册</string></property></widget></item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
 </ui>
+
