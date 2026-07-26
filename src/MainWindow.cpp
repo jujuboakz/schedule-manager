@@ -7,6 +7,7 @@
 #include <QCloseEvent>
 #include <QDateTime>
 #include <QFile>
+#include <QHeaderView>
 #include <QApplication>
 #include <QDebug>
 #include <QJsonDocument>
@@ -204,8 +205,19 @@ void MainWindow::refreshTable(const QList<Task> &tasks) {
         ui->tableWidget->setItem(i, 5, new QTableWidgetItem(t.remindTime.toString("yyyy-MM-dd HH:mm")));
         ui->tableWidget->setItem(i, 6, new QTableWidgetItem(t.completed ? "✅ 已完成" : "⏳ 未完成"));
     }
-    ui->tableWidget->resizeColumnsToContents();
+    
+    QHeaderView *header = ui->tableWidget->horizontalHeader();
 
+    header->setSectionResizeMode(0, QHeaderView::ResizeToContents); // ID
+    header->setSectionResizeMode(1, QHeaderView::Stretch);          // 名称
+    header->setSectionResizeMode(2, QHeaderView::ResizeToContents); // 开始时间
+    header->setSectionResizeMode(3, QHeaderView::ResizeToContents); // 优先级
+    header->setSectionResizeMode(4, QHeaderView::ResizeToContents); // 分类
+    header->setSectionResizeMode(5, QHeaderView::ResizeToContents); // 提醒时间
+    header->setSectionResizeMode(6, QHeaderView::ResizeToContents); // 状态
+
+    header->setStretchLastSection(false);
+    
     // ===== 更新统计面板 =====
     int total = m_tasks.size();
     int today = 0;
