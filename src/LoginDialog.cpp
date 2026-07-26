@@ -1,6 +1,7 @@
 #include "LoginDialog.h"
-#include "ui_LoginDialog.h"
+#include "ui_LoginDialog.h"          // ← 这里改了
 #include "RegisterDialog.h"
+#include "Storage.h"
 #include <QMessageBox>
 #include <QCryptographicHash>
 
@@ -40,10 +41,29 @@ void LoginDialog::onRegisterClicked() {
     if(reg.exec() == QDialog::Accepted) {
         QString name = reg.getUsername();
         QString pwd = reg.getPassword();
+        
+        qDebug() << "=== 注册流程开始 ===";
+        qDebug() << "用户名:" << name;
+        qDebug() << "注册前 m_users 大小:" << m_users.size();
+        
         if(!m_users.contains(name)) {
             QString hash = QCryptographicHash::hash(pwd.toUtf8(), QCryptographicHash::Sha256).toHex();
             m_users[name] = hash;
-            QMessageBox::information(this, "成功", "注册成功，请登录");
+            
+            qDebug() << "注册后 m_users 大小:" << m_users.size();
+            qDebug() << "m_users 内容:" << m_users;
+            
+            bool result = Storage::saveUsers(m_users);
+            qDebug() << "Storage::saveUsers 返回:" << result;
+            
+            if(result) {
+                // 立即读取验证
+                auto loaded = Storage::loadUsers();
+                qDebug() << "写入后重新读取，用户数:" << loaded.size();
+                QMessageBox::information(this, "成功", "注册成功，请登录");
+            } else {
+                QMessageBox::warning(this, "错误", "保存用户数据失败");
+            }
         } else {
             QMessageBox::warning(this, "错误", "用户名已存在");
         }
