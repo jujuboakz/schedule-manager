@@ -10,6 +10,7 @@ VoiceRecognizer::VoiceRecognizer(QObject *parent)
     , m_recordingProcess(nullptr)
     , m_isRecording(false)
     , m_initialized(false)
+    , m_stoppedByUser(false)           // 新增：初始化标志
     , m_tempWavFile("/tmp/voice_temp.wav")
 {
 }
@@ -58,6 +59,9 @@ void VoiceRecognizer::startRecording(int seconds)
         return;
     }
 
+    // ===== 新增：重置标志位 =====
+    m_stoppedByUser = false;
+
     // 删除旧的临时文件
     QFile::remove(m_tempWavFile);
 
@@ -97,13 +101,26 @@ void VoiceRecognizer::stopRecording()
 {
     if (!m_isRecording || !m_recordingProcess) return;
 
-    m_recordingProcess->terminate(); // 发送 SIGTERM
+    // ===== 新增：标记为用户手动停止 =====
+    m_stoppedByUser = true;
+
+    // 断开信号连接，防止 onRecordingFinished 被触发导致重复删除
+    disconnect(m_recordingProcess, nullptr, this, nullptr);
+
+    m_recordingProcess->terminate();
     m_recordingProcess->waitForFinished(1000);
     if (m_recordingProcess->state() == QProcess::Running) {
         m_recordingProcess->kill();
+        m_recordingProcess->waitForFinished(500);
     }
+
+    // 手动清理进程
+    delete m_recordingProcess;
+    m_recordingProcess = nullptr;
     m_isRecording = false;
+
     emit statusChanged("录音已手动停止");
+    qDebug() << "用户手动停止录音";
 }
 
 bool VoiceRecognizer::isRecording() const
@@ -113,9 +130,25 @@ bool VoiceRecognizer::isRecording() const
 
 void VoiceRecognizer::onRecordingFinished(int exitCode, QProcess::ExitStatus status)
 {
+    // ===== 新增：如果是用户手动停止，跳过识别逻辑 =====
+    if (m_stoppedByUser) {
+        qDebug() << "用户手动停止，跳过识别";
+        // 清理进程（如果还没被清理）
+        if (m_recordingProcess) {
+            delete m_recordingProcess;
+            m_recordingProcess = nullptr;
+        }
+        m_isRecording = false;
+        return;
+    }
+
     m_isRecording = false;
-    delete m_recordingProcess;
-    m_recordingProcess = nullptr;
+
+    // 清理进程
+    if (m_recordingProcess) {
+        delete m_recordingProcess;
+        m_recordingProcess = nullptr;
+    }
 
     if (status == QProcess::CrashExit || exitCode != 0) {
         qDebug() << "录音进程异常退出，exitCode:" << exitCode;
@@ -133,6 +166,13 @@ void VoiceRecognizer::onRecordingFinished(int exitCode, QProcess::ExitStatus sta
 void VoiceRecognizer::onProcessError(QProcess::ProcessError error)
 {
     qDebug() << "录音进程错误:" << error;
+
+    // ===== 新增：如果已经标记为手动停止，不处理 =====
+    if (m_stoppedByUser) {
+        qDebug() << "用户已手动停止，忽略进程错误";
+        return;
+    }
+
     m_isRecording = false;
     if (m_recordingProcess) {
         delete m_recordingProcess;
@@ -191,6 +231,15 @@ void VoiceRecognizer::recognizeWavFile(const QString &filePath)
 
 void VoiceRecognizer::cleanup()
 {
+    // ===== 修改：清理时也检查进程 =====
+    if (m_recordingProcess) {
+        disconnect(m_recordingProcess, nullptr, this, nullptr);
+        m_recordingProcess->terminate();
+        m_recordingProcess->waitForFinished(500);
+        delete m_recordingProcess;
+        m_recordingProcess = nullptr;
+    }
+
     if (m_recognizer) {
         vosk_recognizer_free(m_recognizer);
         m_recognizer = nullptr;
@@ -200,4 +249,6 @@ void VoiceRecognizer::cleanup()
         m_model = nullptr;
     }
     m_initialized = false;
+    m_isRecording = false;
+    m_stoppedByUser = false;
 }

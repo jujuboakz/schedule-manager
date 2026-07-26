@@ -18,7 +18,7 @@ public:
     ~VoiceRecognizer();
 
     bool init(const QString &modelPath);
-    void startRecording(int seconds = 5);   // Â¼ÖÆÃëÊý
+    void startRecording(int seconds = 5);
     void stopRecording();
     bool isRecording() const;
 
@@ -39,6 +39,7 @@ private:
     QProcess *m_recordingProcess;
     bool m_isRecording;
     bool m_initialized;
+    bool m_stoppedByUser;
     QString m_tempWavFile;
 };
 
