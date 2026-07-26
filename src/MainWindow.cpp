@@ -234,11 +234,14 @@ void MainWindow::refreshTable(const QList<Task> &tasks) {
     ui->label_done->setText("✅ 已完成：" + QString::number(done));
 }
 
-void MainWindow::onTaskReminded(const Task &task) {
+void MainWindow::onTaskReminded(const Task &task)
+{
     qDebug() << "===== 提醒被触发！任务：" << task.name << "=====";
 
-    // 系统蜂鸣声（哔）
-    QApplication::beep();
+    // ========== 播放自定义提示音 ==========
+    QString soundPath = QApplication::applicationDirPath() + "/sounds/alert.wav";
+    std::string cmd = "aplay " + soundPath.toStdString() + " > /dev/null 2>&1 &";
+    system(cmd.c_str());
 
     // 弹窗提醒
     QMessageBox::information(this, "⏰ 任务提醒",
