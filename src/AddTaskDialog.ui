@@ -1,160 +1,182 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+
  <class>AddTaskDialog</class>
+
  <widget class="QDialog" name="AddTaskDialog">
+
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>351</height>
+    <width>500</width>
+    <height>300</height>
    </rect>
   </property>
+
+
   <property name="windowTitle">
    <string>添加/修改任务</string>
   </property>
-  <widget class="QComboBox" name="comboBox_Priority">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>135</y>
-     <width>360</width>
-     <height>30</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_4">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>180</y>
-     <width>60</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>分类</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>135</y>
-     <width>60</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>优先级</string>
-   </property>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>280</y>
-     <width>168</width>
-     <height>33</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout">
-    <item>
-     <widget class="QPushButton" name="pushButton_Ok">
-      <property name="text">
-       <string>确认</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_Cancel">
-      <property name="text">
-       <string>取消</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>34</x>
-     <y>40</y>
-     <width>60</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>任务名称</string>
-   </property>
-  </widget>
-  <widget class="QDateTimeEdit" name="dateTimeEdit_Remind">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>225</y>
-     <width>360</width>
-     <height>30</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QDateTimeEdit" name="dateTimeEdit_Start">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>90</y>
-     <width>360</width>
-     <height>30</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_5">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>225</y>
-     <width>60</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>提醒时间</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>90</y>
-     <width>60</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>开始时间</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_Name">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>40</y>
-     <width>360</width>
-     <height>30</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="comboBox_Category">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>180</y>
-     <width>360</width>
-     <height>30</height>
-    </rect>
-   </property>
-  </widget>
+
+
+  <layout class="QGridLayout" name="gridLayout">
+
+   <!-- 任务名称 -->
+
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>任务名称</string>
+     </property>
+    </widget>
+   </item>
+
+
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="lineEdit_Name"/>
+   </item>
+
+
+
+   <!-- 开始时间 -->
+
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>开始时间</string>
+     </property>
+    </widget>
+   </item>
+
+
+   <item row="1" column="1">
+    <widget class="QDateTimeEdit" name="dateTimeEdit_Start"/>
+   </item>
+
+
+
+   <!-- 优先级 -->
+
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>优先级</string>
+     </property>
+    </widget>
+   </item>
+
+
+   <item row="2" column="1">
+    <widget class="QComboBox" name="comboBox_Priority"/>
+   </item>
+
+
+
+   <!-- 分类 -->
+
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>分类</string>
+     </property>
+    </widget>
+   </item>
+
+
+   <item row="3" column="1">
+    <widget class="QComboBox" name="comboBox_Category"/>
+   </item>
+
+
+
+   <!-- 提醒时间 -->
+
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>提醒时间</string>
+     </property>
+    </widget>
+   </item>
+
+
+   <item row="4" column="1">
+    <widget class="QDateTimeEdit" name="dateTimeEdit_Remind"/>
+   </item>
+
+
+
+   <!-- 按钮 -->
+
+   <item row="5" column="0" colspan="2">
+
+    <layout class="QHBoxLayout" name="horizontalLayout">
+
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+
+       <property name="sizeHint">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+
+      </spacer>
+     </item>
+
+
+     <item>
+      <widget class="QPushButton" name="pushButton_Ok">
+       <property name="text">
+        <string>确认</string>
+       </property>
+      </widget>
+     </item>
+
+
+     <item>
+      <widget class="QPushButton" name="pushButton_Cancel">
+       <property name="text">
+        <string>取消</string>
+       </property>
+      </widget>
+     </item>
+
+
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+
+       <property name="sizeHint">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+
+      </spacer>
+     </item>
+
+
+    </layout>
+
+   </item>
+
+
+  </layout>
+
+
  </widget>
+
+
  <resources/>
  <connections/>
+
 </ui>
