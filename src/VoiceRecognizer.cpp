@@ -59,7 +59,7 @@ void VoiceRecognizer::startRecording(int seconds)
         return;
     }
 
-    // ===== 新增：重置标志位 =====
+    // 重置标志位 
     m_stoppedByUser = false;
 
     // 删除旧的临时文件
@@ -83,6 +83,7 @@ void VoiceRecognizer::startRecording(int seconds)
 
     qDebug() << "执行命令: arecord" << args.join(" ");
 
+    // 使用QProcess调用Linux系统录音工具arecord
     m_recordingProcess->start("arecord", args);
     if (!m_recordingProcess->waitForStarted(2000)) {
         qDebug() << "启动 arecord 失败";
@@ -101,7 +102,7 @@ void VoiceRecognizer::stopRecording()
 {
     if (!m_isRecording || !m_recordingProcess) return;
 
-    // ===== 新增：标记为用户手动停止 =====
+    // 标记为用户手动停止
     m_stoppedByUser = true;
 
     // 断开信号连接，防止 onRecordingFinished 被触发导致重复删除
@@ -130,7 +131,7 @@ bool VoiceRecognizer::isRecording() const
 
 void VoiceRecognizer::onRecordingFinished(int exitCode, QProcess::ExitStatus status)
 {
-    // ===== 新增：如果是用户手动停止，跳过识别逻辑 =====
+    // 如果是用户手动停止，跳过识别逻辑
     if (m_stoppedByUser) {
         qDebug() << "用户手动停止，跳过识别";
         // 清理进程（如果还没被清理）
@@ -167,7 +168,7 @@ void VoiceRecognizer::onProcessError(QProcess::ProcessError error)
 {
     qDebug() << "录音进程错误:" << error;
 
-    // ===== 新增：如果已经标记为手动停止，不处理 =====
+    // 如果已经标记为手动停止，不处理
     if (m_stoppedByUser) {
         qDebug() << "用户已手动停止，忽略进程错误";
         return;
@@ -231,7 +232,7 @@ void VoiceRecognizer::recognizeWavFile(const QString &filePath)
 
 void VoiceRecognizer::cleanup()
 {
-    // ===== 修改：清理时也检查进程 =====
+    // 清理时也检查进程
     if (m_recordingProcess) {
         disconnect(m_recordingProcess, nullptr, this, nullptr);
         m_recordingProcess->terminate();

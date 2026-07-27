@@ -3,6 +3,9 @@
 #include <QDebug>
 #include <QThread> 
 
+// 后台提醒模块
+// 满足条件时，信号提醒主线程弹窗提醒
+
 Reminder::Reminder(const QList<Task> *tasks, QObject *parent)
     : QObject(parent), m_tasks(tasks)
 {
@@ -10,6 +13,7 @@ Reminder::Reminder(const QList<Task> *tasks, QObject *parent)
     qDebug() << "接收到的任务列表指针:" << m_tasks;
     qDebug() << "当前任务数量:" << (m_tasks ? m_tasks->size() : 0);
 
+    // 创建定时器
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &Reminder::checkReminders);
 }
@@ -20,6 +24,7 @@ void Reminder::start(int intervalSec) {
 }
 
 void Reminder::checkReminders() {
+
     // ========== 调试信息1：函数被调用 ==========
     qDebug() << "========================================";
     qDebug() << ">>> checkReminders() 被执行";
@@ -43,11 +48,11 @@ void Reminder::checkReminders() {
 
     for(const Task &task : *m_tasks) {
         // 获取条件变量
-        bool timeCondition = task.remindTime <= now;
+        bool timeCondition = task.remindTime <= now; // 到达提醒时间
         
-        bool completedCondition = task.isFinished(); 
+        bool completedCondition = task.isFinished(); // 未完成
         
-        bool remindedCondition = m_remindedIds.contains(task.id);
+        bool remindedCondition = m_remindedIds.contains(task.id); // 未提醒过
 
         qDebug() << "  ----- 任务 ID:" << task.id << " -----";
         qDebug() << "  名称:" << task.name;
@@ -59,16 +64,21 @@ void Reminder::checkReminders() {
         qDebug() << "  触发条件 (未完成 && 时间满足 && 未提醒过):"
                  << (!completedCondition && timeCondition && !remindedCondition);
 
+
         // ========== 实际提醒逻辑 ==========
         // 同样，这里使用了 task.isFinished()
         if(!task.isFinished() && task.remindTime <= now && !m_remindedIds.contains(task.id)) {
+            
             qDebug() << "  >>>>>> 条件满足！发送提醒信号！任务:" << task.name;
+
             m_remindedIds.append(task.id);
             emit remindSignal(task);
+
         } else {
             qDebug() << "  条件不满足，跳过";
         }
     }
+
 
     // ========== 调试信息4：已提醒ID列表 ==========
     qDebug() << "已提醒ID列表:" << m_remindedIds;

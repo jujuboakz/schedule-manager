@@ -7,6 +7,8 @@
 #include <QCoreApplication>
 #include <QDebug>
 
+// 负责内存数据与json文件之间的相互转换
+
 void Storage::ensureDirectoryExists() {
     QString dataPath = QCoreApplication::applicationDirPath() + "/data";
     QDir dir(dataPath);
