@@ -20,14 +20,6 @@ MainWindow::MainWindow(const QString &username, QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("📅 日程管家 - " + username);
 
-    // // ========== 统计标签和分组框标题改为黑色 ==========
-    // ui->label_total->setStyleSheet("color: #000000;");
-    // ui->label_today->setStyleSheet("color: #000000;");
-    // ui->label_done->setStyleSheet("color: #000000;");
-    // ui->groupBox_Stats->setStyleSheet("QGroupBox::title { color: #000000; }");
-       
-    // ===================================================
-
     // 连接界面信号
     connect(ui->pushButton_Add, &QPushButton::clicked, this, &MainWindow::onAddTask);
     connect(ui->pushButton_Delete, &QPushButton::clicked, this, &MainWindow::onDeleteTask);
@@ -57,9 +49,16 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
+// ========== 供 Reminder 安全获取任务列表 ==========
+QList<Task> MainWindow::getTasksCopy() const
+{
+    QMutexLocker locker(&m_taskMutex);
+    return m_tasks;
+}
+
 void MainWindow::setupRemindWorker() {
     m_remindThread = new QThread(this);
-    m_remindWorker = new Reminder(&m_tasks);
+    m_remindWorker = new Reminder(this);
     m_remindWorker->moveToThread(m_remindThread);
 
     connect(m_remindThread, &QThread::started, [this]() {
@@ -72,6 +71,7 @@ void MainWindow::setupRemindWorker() {
 }
 
 void MainWindow::loadTasks() {
+    QMutexLocker locker(&m_taskMutex);
     m_tasks = Storage::loadTasks(m_username);
     for(const Task &t : m_tasks) {
         if(t.id >= m_nextId) m_nextId = t.id + 1;
@@ -79,9 +79,13 @@ void MainWindow::loadTasks() {
 }
 
 void MainWindow::saveTasks() {
-    Storage::saveTasks(m_tasks,m_username);
+    // 不加锁，由调用者负责加锁
+    Storage::saveTasks(m_tasks, m_username);
 }
 
+// ============================================================
+//  onAddTask() - 缩小锁范围
+// ============================================================
 void MainWindow::onAddTask() {
     AddTaskDialog dlg(this);
 
@@ -92,19 +96,28 @@ void MainWindow::onAddTask() {
 
     if(dlg.exec() == QDialog::Accepted) {
         Task newTask = dlg.getTask();
-        for(const Task &t : m_tasks) {
-            if(t.isSameIdentity(newTask)) {
-                QMessageBox::warning(this, "错误", "任务名称+开始时间已存在，请修改");
-                return;
+
+        // 锁只保护唯一性校验和列表修改
+        {
+            QMutexLocker locker(&m_taskMutex);
+            for(const Task &t : m_tasks) {
+                if(t.isSameIdentity(newTask)) {
+                    QMessageBox::warning(this, "错误", "任务名称+开始时间已存在，请修改");
+                    return;   // 直接返回，锁自动释放
+                }
             }
-        }
-        newTask.id = m_nextId++;
-        m_tasks.append(newTask);
-        saveTasks();
-        onRefreshList();
+            newTask.id = m_nextId++;
+            m_tasks.append(newTask);
+        }   // 锁在此释放
+
+        saveTasks();       // 锁外执行
+        onRefreshList();   // 锁外执行
     }
 }
 
+// ============================================================
+//  onDeleteTask() - 缩小锁范围
+// ============================================================
 void MainWindow::onDeleteTask() {
     int row = ui->tableWidget->currentRow();
     if(row < 0) {
@@ -113,17 +126,28 @@ void MainWindow::onDeleteTask() {
     }
     int id = ui->tableWidget->item(row, 0)->text().toInt();
     if(QMessageBox::question(this, "确认", "确定删除该任务吗？") == QMessageBox::Yes) {
-        for(int i = 0; i < m_tasks.size(); ++i) {
-            if(m_tasks[i].id == id) {
-                m_tasks.removeAt(i);
-                break;
+        bool found = false;
+        {
+            QMutexLocker locker(&m_taskMutex);
+            for(int i = 0; i < m_tasks.size(); ++i) {
+                if(m_tasks[i].id == id) {
+                    m_tasks.removeAt(i);
+                    found = true;
+                    break;
+                }
             }
+        }   // 锁在此释放
+
+        if (found) {
+            saveTasks();
         }
-        saveTasks();
         onRefreshList();
     }
 }
 
+// ============================================================
+//  onEditTask() - 缩小锁范围
+// ============================================================
 void MainWindow::onEditTask() {
     int row = ui->tableWidget->currentRow();
     if(row < 0) {
@@ -131,9 +155,13 @@ void MainWindow::onEditTask() {
         return;
     }
     int id = ui->tableWidget->item(row, 0)->text().toInt();
+
     Task *target = nullptr;
-    for(Task &t : m_tasks) {
-        if(t.id == id) { target = &t; break; }
+    {
+        QMutexLocker locker(&m_taskMutex);
+        for(Task &t : m_tasks) {
+            if(t.id == id) { target = &t; break; }
+        }
     }
     if(!target) return;
 
@@ -141,32 +169,45 @@ void MainWindow::onEditTask() {
     dlg.setTask(*target);
     if(dlg.exec() == QDialog::Accepted) {
         Task newData = dlg.getTask();
-        for(const Task &t : m_tasks) {
-            if(t.id != id && t.isSameIdentity(newData)) {
-                QMessageBox::warning(this, "错误", "任务名称+开始时间已存在");
-                return;
+
+        {
+            QMutexLocker locker(&m_taskMutex);
+            for(const Task &t : m_tasks) {
+                if(t.id != id && t.isSameIdentity(newData)) {
+                    QMessageBox::warning(this, "错误", "任务名称+开始时间已存在");
+                    return;   // 直接返回，锁自动释放
+                }
             }
-        }
-        target->name = newData.name;
-        target->startTime = newData.startTime;
-        target->priority = newData.priority;
-        target->category = newData.category;
-        target->remindTime = newData.remindTime;
+            target->name = newData.name;
+            target->startTime = newData.startTime;
+            target->priority = newData.priority;
+            target->category = newData.category;
+            target->remindTime = newData.remindTime;
+        }   // 锁在此释放
+
         saveTasks();
         onRefreshList();
     }
 }
 
+// ============================================================
+//  onToggleComplete() - 缩小锁范围
+// ============================================================
 void MainWindow::onToggleComplete() {
     int row = ui->tableWidget->currentRow();
     if(row < 0) return;
     int id = ui->tableWidget->item(row, 0)->text().toInt();
-    for(Task &t : m_tasks) {
-        if(t.id == id) {
-            t.completed = !t.completed;
-            break;
+
+    {
+        QMutexLocker locker(&m_taskMutex);
+        for(Task &t : m_tasks) {
+            if(t.id == id) {
+                t.completed = !t.completed;
+                break;
+            }
         }
-    }
+    }   // 锁在此释放
+
     saveTasks();
     onRefreshList();
 }
@@ -176,11 +217,17 @@ void MainWindow::onRefreshList() {
     onDateSelected(date);
 }
 
+// ============================================================
+//  onDateSelected() - 加锁读取，不调用其他可能加锁的函数
+// ============================================================
 void MainWindow::onDateSelected(const QDate &date) {
     QList<Task> filtered;
-    for(const Task &t : m_tasks) {
-        if(t.startTime.date() == date) {
-            filtered.append(t);
+    {
+        QMutexLocker locker(&m_taskMutex);
+        for(const Task &t : m_tasks) {
+            if(t.startTime.date() == date) {
+                filtered.append(t);
+            }
         }
     }
     std::sort(filtered.begin(), filtered.end(), [](const Task &a, const Task &b) {
@@ -205,28 +252,32 @@ void MainWindow::refreshTable(const QList<Task> &tasks) {
         ui->tableWidget->setItem(i, 5, new QTableWidgetItem(t.remindTime.toString("yyyy-MM-dd HH:mm")));
         ui->tableWidget->setItem(i, 6, new QTableWidgetItem(t.completed ? "✅ 已完成" : "⏳ 未完成"));
     }
-    
+
     QHeaderView *header = ui->tableWidget->horizontalHeader();
 
-    header->setSectionResizeMode(0, QHeaderView::ResizeToContents); // ID
-    header->setSectionResizeMode(1, QHeaderView::Stretch);          // 名称
-    header->setSectionResizeMode(2, QHeaderView::ResizeToContents); // 开始时间
-    header->setSectionResizeMode(3, QHeaderView::ResizeToContents); // 优先级
-    header->setSectionResizeMode(4, QHeaderView::ResizeToContents); // 分类
-    header->setSectionResizeMode(5, QHeaderView::ResizeToContents); // 提醒时间
-    header->setSectionResizeMode(6, QHeaderView::ResizeToContents); // 状态
+    header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
+    header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(4, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(5, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(6, QHeaderView::ResizeToContents);
 
     header->setStretchLastSection(false);
-    
+
     // ===== 更新统计面板 =====
-    int total = m_tasks.size();
+    int total = 0;
     int today = 0;
     int done = 0;
     QDate currentDate = QDate::currentDate();
 
-    for(const Task &t : m_tasks) {
-        if(t.startTime.date() == currentDate) today++;
-        if(t.completed) done++;
+    {
+        QMutexLocker locker(&m_taskMutex);
+        total = m_tasks.size();
+        for(const Task &t : m_tasks) {
+            if(t.startTime.date() == currentDate) today++;
+            if(t.completed) done++;
+        }
     }
 
     ui->label_total->setText("📋 总任务数：" + QString::number(total));
@@ -238,12 +289,10 @@ void MainWindow::onTaskReminded(const Task &task)
 {
     qDebug() << "===== 提醒被触发！任务：" << task.name << "=====";
 
-    // ========== 播放自定义提示音 ==========
     QString soundPath = QApplication::applicationDirPath() + "/sounds/alert.wav";
     std::string cmd = "aplay " + soundPath.toStdString() + " > /dev/null 2>&1 &";
     system(cmd.c_str());
 
-    // 弹窗提醒
     QMessageBox::information(this, "⏰ 任务提醒",
         QString("任务【%1】即将开始！\n开始时间：%2")
         .arg(task.name)
@@ -251,6 +300,7 @@ void MainWindow::onTaskReminded(const Task &task)
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
+    QMutexLocker locker(&m_taskMutex);
     saveTasks();
     event->accept();
 }

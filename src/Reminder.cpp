@@ -1,14 +1,15 @@
 #include "Reminder.h"
+#include "MainWindow.h" 
 #include <QDateTime>
 #include <QDebug>
-#include <QThread> 
+#include <QThread>
 
-Reminder::Reminder(const QList<Task> *tasks, QObject *parent)
-    : QObject(parent), m_tasks(tasks)
+// ========== 修改：构造函数接收 MainWindow 指针 ==========
+Reminder::Reminder(MainWindow *mainWindow, QObject *parent)
+    : QObject(parent), m_mainWindow(mainWindow)
 {
     qDebug() << "=== Reminder 构造函数被调用 ===";
-    qDebug() << "接收到的任务列表指针:" << m_tasks;
-    qDebug() << "当前任务数量:" << (m_tasks ? m_tasks->size() : 0);
+    qDebug() << "接收到的 MainWindow 指针:" << m_mainWindow;
 
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &Reminder::checkReminders);
@@ -25,28 +26,29 @@ void Reminder::checkReminders() {
     qDebug() << ">>> checkReminders() 被执行";
     qDebug() << "当前线程ID:" << QThread::currentThreadId();
 
-    // ========== 调试信息2：检查任务列表是否有效 ==========
-    if (!m_tasks) {
-        qDebug() << "错误：m_tasks 指针为空！";
+    // ========== 检查 MainWindow 指针是否有效 ==========
+    if (!m_mainWindow) {
+        qDebug() << "错误：m_mainWindow 指针为空！";
         return;
     }
 
-    qDebug() << "当前任务数量:" << m_tasks->size();
-    if (m_tasks->isEmpty()) {
+    // ========== 通过 MainWindow 的加锁接口获取任务列表拷贝 ==========
+    QList<Task> tasks = m_mainWindow->getTasksCopy();
+
+    qDebug() << "当前任务数量:" << tasks.size();
+    if (tasks.isEmpty()) {
         qDebug() << "提示：任务列表为空，没有任务可检查";
         return;
     }
 
-    // ========== 调试信息3：检查每个任务的条件 ==========
+    // ========== 检查每个任务的条件 ==========
     QDateTime now = QDateTime::currentDateTime();
     qDebug() << "当前时间:" << now.toString("yyyy-MM-dd hh:mm:ss");
 
-    for(const Task &task : *m_tasks) {
+    for(const Task &task : tasks) {
         // 获取条件变量
         bool timeCondition = task.remindTime <= now;
-        
         bool completedCondition = task.isFinished(); 
-        
         bool remindedCondition = m_remindedIds.contains(task.id);
 
         qDebug() << "  ----- 任务 ID:" << task.id << " -----";
@@ -60,7 +62,6 @@ void Reminder::checkReminders() {
                  << (!completedCondition && timeCondition && !remindedCondition);
 
         // ========== 实际提醒逻辑 ==========
-        // 同样，这里使用了 task.isFinished()
         if(!task.isFinished() && task.remindTime <= now && !m_remindedIds.contains(task.id)) {
             qDebug() << "  >>>>>> 条件满足！发送提醒信号！任务:" << task.name;
             m_remindedIds.append(task.id);
