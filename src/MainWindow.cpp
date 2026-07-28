@@ -57,6 +57,8 @@ QList<Task> MainWindow::getTasksCopy() const
 }
 
 void MainWindow::setupRemindWorker() {
+
+    // 创建新线程，将提醒迁移到新建子线程
     m_remindThread = new QThread(this);
     m_remindWorker = new Reminder(this);
     m_remindWorker->moveToThread(m_remindThread);
@@ -310,6 +312,7 @@ void MainWindow::setupVoiceRecognizer()
 {
     m_voiceRecognizer = new VoiceRecognizer(this);
 
+    // 加载模型
     QString modelPath = QApplication::applicationDirPath() + "/model";
     if (!QFile::exists(modelPath)) {
         modelPath = QApplication::applicationDirPath() + "/../model";

@@ -32,6 +32,8 @@ static QString normalizeDataPath(const QString &path) {
     return path;
 }
 
+// 负责内存数据与json文件之间的相互转换
+
 void Storage::ensureDirectoryExists() {
     QString dataPath = getDataDir();
     QDir dir(dataPath);
